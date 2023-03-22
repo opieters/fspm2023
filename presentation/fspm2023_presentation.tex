@@ -165,6 +165,7 @@
 \newcounter{resnode}
 
 \usepackage{pgfplots}
+\usepackage{pgfplotstable}
 \pgfplotsset{compat=1.18}
 \usepgfplotslibrary{fillbetween,groupplots,dateplot,units,statistics}
 
@@ -292,133 +293,241 @@ legend style={fill=BgColor},
 
 \begin{document}
 \setbeamercolor{background canvas}{bg=BgColor}
+%
+%\begin{frame}[plain,label=title]
+%\thispagestyle{empty}
+%	\setlength{\imwidth}{2cm}
+%	\begin{tikzpicture}[overlay,remember picture]
+%        \matrix[%
+%            anchor=south west,
+%            matrix of nodes,
+%            inner sep=0pt,
+%            inner sep=0cm,
+%			column sep=0.2cm,
+%			row sep=0.2cm,
+%            ampersand replacement=\&,
+%        ]  at ($(current page.south west)+(0.25,0.25)$) (m) {
+%            \includegraphics[width=\imwidth]{figures/ugent_logo} \&
+%            \includegraphics[width=\imwidth]{figures/ilvo} \&
+%            \includegraphics[width=\imwidth]{figures/imec_logo} \\
+%        };
+%
+%        \matrix[%
+%            anchor=south east,
+%            matrix of nodes,
+%            inner sep=0pt,
+%            inner sep=0cm,
+%			column sep=0.2cm,
+%			row sep=0.2cm,
+%            ampersand replacement=\&,
+%        ]  at ($(current page.south east)+(-0.25,0.25)$) (m) {
+%            \includegraphics[width=\imwidth]{figures/AIRO} \\
+%        };
+%	\begin{pgfonlayer}{background}
+%		\node[opacity=0.3] at ($(current page.center)+(0,0.5)$) {\includegraphics[height=\paperheight]{figures/bg-image}};
+%	\end{pgfonlayer}
+%	\end{tikzpicture}
+%    \maketitle
+%\end{frame}
+%
+%\begin{frame}{Suppose That You Want to Compare Two FSPMs}
+%
+%\begin{columns}
+%\begin{column}{0.45\linewidth}
+%\centering
+%\begin{tikzpicture}
+%	\node {\includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{figures/wheat-model1}};
+%	\node {\fontsize{100}{120}\selectfont A};
+%\end{tikzpicture}
+%\end{column}%
+%\hfill%
+%\begin{column}{0.45\linewidth}
+%\centering
+%\begin{tikzpicture}
+%	\node {\includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{figures/wheat-model2}};
+%	\node {\fontsize{100}{120}\selectfont B};
+%\end{tikzpicture}
+%\end{column}
+%\end{columns}
+%
+%\end{frame}
+%
+%\begin{frame}{We Propose a New Trial-free Comparison Based on Unconventional Computing}
+%
+%\centering
+%\begin{tikzpicture}
+%
+%\matrix[
+%  matrix of nodes,
+%  ampersand replacement=\&,
+%  %column 1/.style={text width=4cm},
+%  column 4/.style={text width=4cm},
+%  nodes={anchor=center}
+%] (m) {
+%{\includegraphics[height=3cm]{figures/wheat-field}} \&[0.5cm]
+%  {\includegraphics[height=3cm]{figures/wheat-model1}} \&
+%  {\includegraphics[height=3cm]{figures/wheat-model2}} \&[0.5cm] 
+%  compare model outputs with field observations\\
+%{\includegraphics[height=3cm]{figures/weather}} \&
+%  {\includegraphics[height=3cm]{figures/wheat-model1}} \&
+%  {\includegraphics[height=3cm]{figures/wheat-model2}} \& 
+%  input-based comparison based on model outputs\\
+%};
+%
+%\node at (m-1-2) (mA1) {\fontsize{50}{60}\selectfont A};
+%\node at (m-1-3) (mB1) {\fontsize{50}{60}\selectfont B};
+%\node at (m-2-2) (mA2) {\fontsize{50}{60}\selectfont A};
+%\node at (m-2-3) (mB2) {\fontsize{50}{60}\selectfont B};
+%\node[anchor=north east] at (m-1-1.north east) (wobs) {\includegraphics[height=1cm]{figures/weather-observation}};
+%
+%\draw[line>] (wobs.east) ++(0,0.25cm) -| (mA1);
+%\draw[line>] (wobs.east) ++(0,0.25cm) -| (mB1);
+%
+%\draw[line>] (mA1.south) -- ++(0,-0.5cm) -| (m-1-4);
+%\draw[line>] (mB1.south) -- ++(0,-0.375cm) -| ($(m-1-4.south)+(-0.5cm,0)$);
+%\draw[line>] (m-1-1.south east) ++ (0,0.25cm) -| ($(m-1-4.south)+(0.5cm,0)$);
+%
+%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (mA2);
+%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (mB2);
+%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (m-2-4);
+%
+%\draw[line>] (mA2.south) -- ++(0,-0.5cm) -| ($(m-2-4.south)+(0.25cm,0)$);
+%\draw[line>] (mB2.south) -- ++(0,-0.375cm) -| ($(m-2-4.south)+(-0.25cm,0)$);
+%
+%
+%\end{tikzpicture}
+%
+%\end{frame}
+%
+%
+%\begin{frame}{FSPMs Are Information Processing Systems}
+%    \centering
+%    \begin{tikzpicture}
+%
+%	\matrix[
+%        matrix of nodes,
+%        anchor=center,
+%        inner sep=0.2em,
+%		ampersand replacement=\&,
+%		nodes={anchor=center},
+%    ] at (-4.5,0) (input) {
+%        {\color{SeqRed2}\Huge\faTemperatureLow} \& temperature \\
+%        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=center]{humidity\\ water availability}; \\
+%        {\color{orange}\Huge\faSun}         \& light \\
+%    };
+%
+%    \node[anchor=center,inner sep=0pt] at (0,0) (image) {\includegraphics[height=6cm]{figures/plant-model}};
+%
+%	\matrix[
+%        matrix of nodes,
+%        anchor=center,
+%        inner sep=0.2em,
+%		ampersand replacement=\&,
+%		nodes={anchor=center},
+%    ] at (4.5,0) (output) {
+%        {\color{SeqRed2}\Huge\faTemperatureLow} \& surface temperature \\
+%        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=left]{transpiration rate\\water flow\\water potential}; \\
+%        {\color{orange}\Huge\faSun}         \& net photosynthesis \\
+%    };
+%
+%
+%	\begin{scope}[transparency group,-{Latex[length=10mm, width=12.5mm]},,opacity=0.3]
+%		\draw[line width=5mm] ($0.5*(input.east)+0.5*(input.center)$) -- ($0.5*(image.west)+0.5*(image.center)$);
+%		\draw[line width=5mm] ($0.5*(image.east)+0.5*(image.center)$) -- ($0.5*(output.west)+0.5*(output.center)$);
+%	\end{scope}
+%	
+%	\only<2->{%
+%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg,minimum height=3cm,minimum width=3.5cm}]
+%	  \node at (input.center) {\Huge \textbf{inputs}};
+%	  \node at (image.center) (processing) {\Huge \textbf{processing}};
+%	  \node at (output.center) {\Huge \textbf{outputs}};
+%    \end{scope}
+%	}
+%    \only<3->{%
+%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg}]
+%	  \node [above left=0.6cm and 3cm of processing.north,anchor=base] {\huge non-linear};
+%	  \node [above right=0.6cm and 3cm of processing.north,anchor=base] {\huge memory};
+%    \end{scope}
+%    	}
+%
+%    \only<4->{%
+%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg}]
+%	  \node [below=0.5cm of processing.south] {\Huge \textbf{reservoir computing}};
+%    \end{scope}
+%    	}
+%
+%    \end{tikzpicture}
+%\end{frame}
+%
+%\begin{frame}{Reservoir Computing Enables Computing with Dynamic Systems}
+%    \centering
+%    \begin{tikzpicture}
+%    
+%    	% draw rectangle labels
+%    	\node[box label,anchor=base] at (1,3.5) (i-label) {input};
+%    	\node[box label,anchor=base] at (5,3.5) (res-label) {reservoir/RNN};
+%    	\node[box label,anchor=base] at (9,3.5) (o-label) {target};
+%    	
+%    	\draw[line] (i-label.base) ++(-1,-0.2) -- ++(2,0);
+%    	\draw[line] (res-label.base) ++(-2.5,-0.2) -- ++(5,0);
+%    	\draw[line] (o-label.base) ++(-1,-0.2) -- ++(2,0);
+%    	
+%    	
+%    	%%% other reservoir
+%  	\begin{scope}
+%      \node[input node] at (1,2) (in0) {};
+%      \node[input node] at (1,1) (in1) {};
+%
+%    	\setcounter{resnode}{0}
+%    	% reservoir nodes
+%    	\foreach \x/\y in {3/2.25,3.5/1,4/3.5,5/1.5,5.25/3.75,6/0.5,6.15/2.25,7/3.5} {
+%    		\draw (\x,2.5*\y/3.5) node[reservoir node] (rn\the\value{resnode}) {};
+%    		\stepcounter{resnode}
+%    	}
+%
+%    	% input arrows
+%    	\foreach \i/\j in {0/0,0/1,1/0,1/2} {
+%    		\draw[line>] (in\i) -- (rn\j);
+%    	}
+%
+%    	% reservoir arrows
+%    	\foreach \i/\j in {0/3,0/2,1/0,1/5,2/1,3/1,2/3,4/2,5/6,6/2,6/4,6/7,7/0,7/4} {
+%    		\draw[line>] (rn\i) -- (rn\j);
+%    	}
+%    	% bent arrows
+%        \foreach \i/\j in {2/0,5/7} {
+%       		\draw[line>] (rn\i) to[bend right] (rn\j);
+%       	}
+%       	
+%    
+%        	% output nodes
+%    	\node[output node] at (9,1.5) (out0) {};
+%
+%    	% output arrows
+%    	\draw[line>,red2] (rn6) -- (out0);
+%       	\draw[line>,red2] (rn3) -- (out0);
+%       \draw[line>,red2] (rn5) -- (out0);
+%       \draw[line>,red2] (rn7) -- (out0);
+%       \end{scope}
+%	\end{tikzpicture}
+%	
+%	\tikz{
+%	\matrix[
+%		matrix of nodes,
+%		column sep=0.2cm,
+%		ampersand replacement=\&,
+%		] {
+%	\includegraphics[height=2cm]{figures/nasa-ball-robot} \&
+%	\includegraphics[height=2cm]{figures/water_bucket_ripples} \&
+%	\includegraphics[height=2cm]{figures/photinic_ic} \&
+%	\includegraphics[height=2cm]{figures/strawberry}\\
+%	};
+%	}
+%	
+%\end{frame}
 
-\begin{frame}[plain,label=title]
-\thispagestyle{empty}
-	\setlength{\imwidth}{2cm}
-	\begin{tikzpicture}[overlay,remember picture]
-        \matrix[%
-            anchor=south west,
-            matrix of nodes,
-            inner sep=0pt,
-            inner sep=0cm,
-			column sep=0.2cm,
-			row sep=0.2cm,
-            ampersand replacement=\&,
-        ]  at ($(current page.south west)+(0.25,0.25)$) (m) {
-            \includegraphics[width=\imwidth]{figures/ugent_logo} \&
-            \includegraphics[width=\imwidth]{figures/ilvo} \&
-            \includegraphics[width=\imwidth]{figures/imec_logo} \\
-        };
 
-        \matrix[%
-            anchor=south east,
-            matrix of nodes,
-            inner sep=0pt,
-            inner sep=0cm,
-			column sep=0.2cm,
-			row sep=0.2cm,
-            ampersand replacement=\&,
-        ]  at ($(current page.south east)+(-0.25,0.25)$) (m) {
-            \includegraphics[width=\imwidth]{figures/AIRO} \\
-        };
-	\begin{pgfonlayer}{background}
-		\node[opacity=0.3] at ($(current page.center)+(0,0.5)$) {\includegraphics[height=\paperheight]{figures/bg-image}};
-	\end{pgfonlayer}
-	\end{tikzpicture}
-    \maketitle
-\end{frame}
-
-\begin{frame}{The Fundamentals of Information Processing}
-
-\centering
-\begin{tikzpicture}
-    \tikzset{%
-        my style 0/.style={opacity=0},
-        my style 1/.style={opacity=0},
-        my style 2/.style={opacity=0}%
-    }
-
-	\onslide<2->{\tikzset{my style 0/.style={opacity=1}}}
-	\onslide<3->{\tikzset{my style 1/.style={opacity=1}}}
-	\onslide<4->{\tikzset{my style 2/.style={opacity=1}}}
-
-    \node at (0,-2.5) (in) {input};
-    \node at (5,-2.5) (vw) {processing};
-    \node at (10,-2.5) (uit) {output};
-
-    \node at (3,-3.5) (tf) {transformation};
-    \node at (7,-3.5) (gh) {memory};
-
-    \draw[line>] (in) -- (vw);
-    \draw[line>] (vw) -- (uit);
-
- 	\draw[line>] (vw) -- (tf);
-    \draw[line>] (vw) -- (gh);
-
-    \node[my style 1] at (0,-5) (in) {input};
-    \node[my style 0] at (5,-5) (vw) {reservoir};
-    \node[my style 2] at (7.5,-5) (model) {model};
-    \node[my style 2] at (10,-5) (uit) {output};
-
-    \node[my style 0] at (3,-6) (tf) {non-linear};
-    \node[my style 0] at (7,-6) (gh) {memory};
-
-    \draw[line>,my style 1] (in) -- (vw);
-    \draw[line>,my style 2] (vw) -- (model);
-    \draw[line>,my style 2] (model) -- (uit);
-
- 	\draw[line>,my style 0] (vw) -- (tf);
-    \draw[line>,my style 0] (vw) -- (gh);
-\end{tikzpicture}
-
-\onslide<5->{
-\begin{center}
-\textbf{reservoir computing}
-\end{center}
-}
-
-\end{frame}
-
-\begin{frame}{FSPMs Are Also Reservoirs}
-    \centering
-    \begin{tikzpicture}
-
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0.2em,
-		ampersand replacement=\&,
-		nodes={anchor=center},
-    ] at (-4.5,0) (input) {
-        {\color{SeqRed2}\Huge\faTemperatureLow} \& temperature \\
-        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=center]{humidity\\ water availability}; \\
-        {\color{orange}\Huge\faSun}         \& light \\
-    };
-
-    \node[anchor=center,inner sep=0pt] at (0,0) (image) {\includegraphics[height=6cm]{figures/plant-model}};
-
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0.2em,
-		ampersand replacement=\&,
-		nodes={anchor=center},
-    ] at (4.5,0) (output) {
-        {\color{SeqRed2}\Huge\faTemperatureLow} \& surface temperature \\
-        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=left]{transpiration rate\\water flow\\water potential}; \\
-        {\color{orange}\Huge\faSun}         \& net photosynthesis \\
-    };
-
-
-	\begin{scope}[transparency group,-{Latex[length=10mm, width=12.5mm]},,opacity=0.3]
-		\draw[line width=5mm] ($0.5*(input.east)+0.5*(input.center)$) -- ($0.5*(image.west)+0.5*(image.center)$);
-		\draw[line width=5mm] ($0.5*(image.east)+0.5*(image.center)$) -- ($0.5*(output.west)+0.5*(output.center)$);
-	\end{scope}
-    \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Typical Reservoir Computing Setup}
+\begin{frame}{Reservoir Computing Applied to FSPMs}
     \centering
     \begin{tikzpicture}
     	% rectangles
@@ -427,9 +536,9 @@ legend style={fill=BgColor},
     	\draw[box] (8,0) rectangle (10,6);
 
     	% draw rectangle labels
-    	\node[box label,anchor=south] at (1,6) {input};
-    	\node[box label,anchor=south] at (5,6) {reservoir};
-    	\node[box label,anchor=south] at (9,6) {output};
+    	\node[box label,anchor=base] at (1,6.2) {input};
+    	\node[box label,anchor=base] at (5,6.2) {reservoir};
+    	\node[box label,anchor=base] at (9,6.2) {target};
     	
     	%% draw plant reservoir
     	
@@ -462,17 +571,20 @@ legend style={fill=BgColor},
     	% draw pot
     	\draw[brown,fill=brown] (5,3.25) -- ++(-0.5,0) -- ++(-0.1,0.75) -- ++(1.2,0) -- ++(-0.1,-0.75) -- cycle;
 
-    	% target    	
-    	\draw (9,3.2) node[anchor=center] (leaf) {\LARGE\color{SeqGreen2}\faLeaf};
-        \draw (9,4.1) node[anchor=center] (rh) {\LARGE\color{SeqRed2}\faApple*};
-        \draw (9,4.9) node[anchor=center] (carrot) {\LARGE\color{SeqYellow2}\faCarrot};
-        \draw (9,5.6) node[anchor=center] (carrot) {\LARGE\color{SeqYellow2}\color{SeqGrey2}\faEyeDropper};
+    	% output    	
+    	\draw (7,3.2) node[anchor=center] (leaf) {\Large\color{SeqGreen2}\faLeaf};
+        \draw (7,4.1) node[anchor=center] (rh) {\Large\color{SeqRed2}\faApple*};
+        \draw (7,4.9) node[anchor=center] (carrot) {\Large\color{SeqYellow2}\faCarrot};
+        \draw (7,5.6) node[anchor=center] (carrot) {\Large\color{SeqYellow2}\color{SeqGrey2}\faEyeDropper};
+        
+        \node[output node] at (9,4.5) (fspm-target) {};
 
     	\draw[line>] (1.9,4.5) -- (4.5,4.5);
-    	\draw[line>] (5.5,4.2) -- (8.3,3.2);
-    	\draw[line>] (5.5,4.4) -- (8.3,4.1);
-    	\draw[line>] (5.5,4.6) -- (8.3,4.9);
-    	\draw[line>] (5.5,4.8) -- (8.3,5.6);
+    	\draw[line>] (5.5,4.2) -- (6.6,3.2);
+    	\draw[line>] (5.5,4.4) -- (6.6,4.1);
+    	\draw[line>] (5.5,4.6) -- (6.6,4.9);
+    	\draw[line>] (5.5,4.8) -- (6.6,5.6);
+    	\draw[line>] (7.3,4.5) -- (fspm-target) node[midway,above,text=fg,fill=BgColor,fill opacity=0.90,text opacity=1] {\Large ?};
     	%\draw[line>] (7,-2.25) -- (rh);
     	
     	%%% other reservoir
@@ -506,10 +618,10 @@ legend style={fill=BgColor},
     	\node[output node] at (9,1.5) (out0) {};
 
     	% output arrows
-    	\draw[line>] (rn6) -- (out0);
-       	\draw[line>] (rn3) -- (out0);
-       \draw[line>] (rn5) -- (out0);
-       \draw[line>] (rn7) -- (out0);
+    	\draw[line>,red2] (rn6) -- (out0);
+       	\draw[line>,red2] (rn3) -- (out0);
+       \draw[line>,red2] (rn5) -- (out0);
+       \draw[line>,red2] (rn7) -- (out0);
        \end{scope}
 	\end{tikzpicture}
 \end{frame}
@@ -606,7 +718,7 @@ legend style={fill=BgColor},
     	% target
     	\node[output node] at (11.5,4.5) (out0) {};
         
-       \draw[line>] (weights1-2-1.south east) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
+       \draw[line>] (weights1-2-1.south east)++(0.1,0) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
 
     	\draw[line>] (1.9,4.5) -- (4.5,4.5);
     	\draw[line>] (5.5,4.5) -- (8.3,4.5);
@@ -683,7 +795,7 @@ legend style={fill=BgColor},
     \draw[line] ($(weights2-1-1.north)+(-0.1,0)$) -| (weights2-2-1.west) |- ($(weights2-4-1.south)+(-0.1,0)$);
     \draw[line] ($(weights2-1-1.north)+(+0.1,0)$) -| (weights2-2-1.east) |- ($(weights2-4-1.south)+(+0.1,0)$);
     
-       \draw[line>] ($0.5*(weights2-2-1.east)+0.5*(weights2-3-1.east)$) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
+       \draw[line>] ($0.5*(weights2-2-1.east)+0.5*(weights2-3-1.east)$) ++(0.1,0) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
 
     	% output arrows
     	\draw[line>] (rn6) -- (readout2-2-1);
@@ -701,8 +813,8 @@ legend style={fill=BgColor},
 
 \centering
 \begin{tabular}{lccc}
- & \includegraphics[width=0.2\textwidth]{figures/cnwheat} & \includegraphics[width=0.2\textwidth]{figures/hydroshoot} & \includegraphics[width=0.2\textwidth]{figures/cnwheat} \\
- & \textbf{CN-Wheat} & \textbf{Hydroshoot} & \textbf{TFM} \\
+ & \includegraphics[width=0.2\textwidth]{figures/cnwheat} & \includegraphics[width=0.2\textwidth]{figures/hydroshoot} & \includegraphics[width=0.2\textwidth]{figures/GrassLeaf} \\
+ & \textbf{CN-Wheat} & \textbf{Hydroshoot} & \textbf{GrassLeaf} \\
  & {\footnotesize (Barillot et al., 2016)} & {\footnotesize (Albasha et al., 2019)} & {\footnotesize (unpublished)} \\
 \textbf{simulation step} & 1h & 1h & 1h \\
 \textbf{simulation duration} & 7d + repeats & 50d & TODO \\
@@ -712,9 +824,74 @@ legend style={fill=BgColor},
 
 \end{frame}
 
+\begin{frame}{Overview of the Methodology (Practical Point of View)}
+
+\centering
+
+\begin{columns}
+\begin{column}{0.47\linewidth}
+\centering
+\begin{tikzpicture}[every node/.style={draw,rounded corners,align=center}]
+\node[] (run) {run the FSPM};
+\node[below=0.5cm of run] (data) {collect output data\\into table by unit};
+\node[below=0.5cm of data] (prep) {data preprocessing};
+\node[below=0.5cm of prep] (train) {train Ridge regression};
+\node[below=0.5cm of train] (eval) {evaluate on unseen data};
+
+\draw[line>] (run) -- (data);
+\draw[line>] (data) -- (prep);
+\draw[line>] (prep) -- (train);
+\draw[line>] (train) -- (eval);
+\draw[line>] (prep.west) -- ++(-1,0) |- (eval);
+\end{tikzpicture}
+\end{column}%
+\hfill%
+\begin{column}{0.47\linewidth}
+\centering
+\begin{tikzpicture}
+    \begin{axis}[
+    	width=\linewidth,
+    	height=\linewidth,
+    	date coordinates in=x,
+    	xticklabel={\month-\day},
+    	xlabel={time},
+    	ylabel={air temperature [\si{\degreeCelsius}]},
+    	xtick={2012-06-01,2012-06-05,2012-06-09,2012-06-13},
+    	]
+        \addplot[line width=1pt] table[x=date, y=Tac, col sep=comma] {meteo.csv};
+        
+        \scoped[on background layer] \fill [blue3!50] (axis cs:2012-06-01 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-05 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
+        
+        \scoped[on background layer] \fill [green2!50] (axis cs:2012-06-05 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-09 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
+        
+        \scoped[on background layer] \fill [blue3!50] (axis cs:2012-06-09 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-13 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
+        
+        \scoped[on background layer] \fill [green2!50] (axis cs:2012-06-13 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-14 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
+    \end{axis}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Transpiration-based Reservoirs for Input Condition Prediction}
+
+\centering
+
+There should be an image here like in the paper
+
+\end{frame}
+
 \begin{frame}{Code and Results}
 
 \url{https://doi.org/10.5281/zenodo.7701995}
+
+Based on the master dissertation by UGent student Maxime Cannoodt.
+
+\textbf{Olivier Pieters}
+Maxime Cannoodt
+Tom De Swaef
+Michiel Stock
+Francis wyffels
 	
 \end{frame}
 
