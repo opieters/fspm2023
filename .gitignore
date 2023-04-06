@@ -15,5 +15,8 @@ E070_52_1_I.pdf
 abstract/*.png
 presentation/figures_original/
 abstract/
-simulations/
 participation-confirmation.pdf
+simulations_old/
+simulations/**/*.csv
+simulations/__pycache__/
+simulations/.ipynb_checkpoints/
