@@ -23,6 +23,7 @@
 \newfontfamily{\titlefont}{League Gothic Regular}[]
 \usepackage{amsmath}
 \usepackage{xcolor}
+\usepackage{qrcode}
 \usepackage{tikz}
 \usetikzlibrary{matrix,positioning,calc,fit,shapes,scopes,arrows.meta,backgrounds,decorations.markings,3d,decorations.pathreplacing,node-families,overlay-beamer-styles}
 
@@ -87,7 +88,7 @@
   \usebeamercolor[fg]{page number in head/foot}%
   \usebeamerfont{page number in head/foot}%
   \setbeamertemplate{page number in head/foot}[framenumber]%
-  %\usebeamertemplate*{page number in head/foot}\alph{slideinframe}\kern1em\vskip2pt%
+  \usebeamertemplate*{page number in head/foot}\kern1em\vskip2pt%
 }
 \setbeamersize{text margin left=10mm,text margin right=10mm}
 
@@ -98,7 +99,7 @@
 
 %\setbeamertemplate{frametitle}{\normalseries}[default][center]
 
-\title{COMPARING FSPMs USING UNCONVENTIONAL COMPUTING METHODS}
+\title{LEVERAGING FSPMs FOR UNCONVENTIONAL COMPUTING WITH PLANTS}
 \date{30 March 2023}
 \author{Olivier Pieters}
 \institute{FSPM 2023}
@@ -134,6 +135,7 @@
 	sum/.style = {draw, circle, node distance=1cm},
 	input/.style = {coordinate},
 	design/.style = {fill=green,fill opacity=0.1,text opacity=1},
+   overlap label/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg,},
 	output/.style = {coordinate},
 	lowpass/.pic={%
 		\draw (-0.4cm,0.25cm)
@@ -291,240 +293,362 @@ legend style={fill=BgColor},
 \pgfdeclarelayer{foreground}
 \pgfsetlayers{background,main,foreground}
 
+\usepackage[most,skins]{tcolorbox}
+\newtcolorbox{nextstep}[1][]{
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    left skip=-4mm,
+    right skip=-2mm,
+    left=1mm,
+    right=1mm,
+    bottom=0mm,
+    leftrule=2mm,
+    boxsep=3mm,
+    borderline west={2mm}{0pt}{SeqBlue3},
+    colback=SeqBlue4,
+    colbacktitle=SeqBlue4,
+    fonttitle=\sffamily\bfseries,
+    coltitle=black,
+    %title={#2},
+    fontupper=\Large
+    #1,
+}
+\newtcolorbox{conclusion}[1][]{
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    sharp corners,
+    left skip=-4mm,
+    right skip=-2mm,
+    left=1mm,
+    right=1mm,
+    bottom=0mm,
+    leftrule=2mm,
+    boxsep=3mm,
+    borderline west={2mm}{0pt}{SeqGreen3},
+    colback=SeqGreen4,
+    colbacktitle=SeqGreen4,
+    fonttitle=\sffamily\bfseries,
+    coltitle=black,
+    %title={#2},
+    fontupper=\Large
+    #1,
+}
+
+% Style to select only points from #1 to #2 (inclusive)
+\pgfplotsset{select coords between index/.style 2 args={
+    x filter/.code={
+        \ifnum\coordindex<#1\def\pgfmathresult{}\fi
+        \ifnum\coordindex>#2\def\pgfmathresult{}\fi
+    }
+}}
+
 \begin{document}
 \setbeamercolor{background canvas}{bg=BgColor}
-%
-%\begin{frame}[plain,label=title]
-%\thispagestyle{empty}
-%	\setlength{\imwidth}{2cm}
-%	\begin{tikzpicture}[overlay,remember picture]
-%        \matrix[%
-%            anchor=south west,
-%            matrix of nodes,
-%            inner sep=0pt,
-%            inner sep=0cm,
-%			column sep=0.2cm,
-%			row sep=0.2cm,
-%            ampersand replacement=\&,
-%        ]  at ($(current page.south west)+(0.25,0.25)$) (m) {
-%            \includegraphics[width=\imwidth]{figures/ugent_logo} \&
-%            \includegraphics[width=\imwidth]{figures/ilvo} \&
-%            \includegraphics[width=\imwidth]{figures/imec_logo} \\
-%        };
-%
-%        \matrix[%
-%            anchor=south east,
-%            matrix of nodes,
-%            inner sep=0pt,
-%            inner sep=0cm,
-%			column sep=0.2cm,
-%			row sep=0.2cm,
-%            ampersand replacement=\&,
-%        ]  at ($(current page.south east)+(-0.25,0.25)$) (m) {
-%            \includegraphics[width=\imwidth]{figures/AIRO} \\
-%        };
-%	\begin{pgfonlayer}{background}
-%		\node[opacity=0.3] at ($(current page.center)+(0,0.5)$) {\includegraphics[height=\paperheight]{figures/bg-image}};
-%	\end{pgfonlayer}
-%	\end{tikzpicture}
-%    \maketitle
-%\end{frame}
-%
-%\begin{frame}{Suppose That You Want to Compare Two FSPMs}
-%
-%\begin{columns}
-%\begin{column}{0.45\linewidth}
-%\centering
-%\begin{tikzpicture}
-%	\node {\includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{figures/wheat-model1}};
-%	\node {\fontsize{100}{120}\selectfont A};
-%\end{tikzpicture}
-%\end{column}%
-%\hfill%
-%\begin{column}{0.45\linewidth}
-%\centering
-%\begin{tikzpicture}
-%	\node {\includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{figures/wheat-model2}};
-%	\node {\fontsize{100}{120}\selectfont B};
-%\end{tikzpicture}
-%\end{column}
-%\end{columns}
-%
-%\end{frame}
-%
-%\begin{frame}{We Propose a New Trial-free Comparison Based on Unconventional Computing}
-%
-%\centering
-%\begin{tikzpicture}
-%
-%\matrix[
-%  matrix of nodes,
-%  ampersand replacement=\&,
-%  %column 1/.style={text width=4cm},
-%  column 4/.style={text width=4cm},
-%  nodes={anchor=center}
-%] (m) {
-%{\includegraphics[height=3cm]{figures/wheat-field}} \&[0.5cm]
-%  {\includegraphics[height=3cm]{figures/wheat-model1}} \&
-%  {\includegraphics[height=3cm]{figures/wheat-model2}} \&[0.5cm] 
-%  compare model outputs with field observations\\
-%{\includegraphics[height=3cm]{figures/weather}} \&
-%  {\includegraphics[height=3cm]{figures/wheat-model1}} \&
-%  {\includegraphics[height=3cm]{figures/wheat-model2}} \& 
-%  input-based comparison based on model outputs\\
-%};
-%
-%\node at (m-1-2) (mA1) {\fontsize{50}{60}\selectfont A};
-%\node at (m-1-3) (mB1) {\fontsize{50}{60}\selectfont B};
-%\node at (m-2-2) (mA2) {\fontsize{50}{60}\selectfont A};
-%\node at (m-2-3) (mB2) {\fontsize{50}{60}\selectfont B};
-%\node[anchor=north east] at (m-1-1.north east) (wobs) {\includegraphics[height=1cm]{figures/weather-observation}};
-%
-%\draw[line>] (wobs.east) ++(0,0.25cm) -| (mA1);
-%\draw[line>] (wobs.east) ++(0,0.25cm) -| (mB1);
-%
-%\draw[line>] (mA1.south) -- ++(0,-0.5cm) -| (m-1-4);
-%\draw[line>] (mB1.south) -- ++(0,-0.375cm) -| ($(m-1-4.south)+(-0.5cm,0)$);
-%\draw[line>] (m-1-1.south east) ++ (0,0.25cm) -| ($(m-1-4.south)+(0.5cm,0)$);
-%
-%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (mA2);
-%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (mB2);
-%\draw[line>] (m-2-1.north east) ++(0,-0.25cm) -| (m-2-4);
-%
-%\draw[line>] (mA2.south) -- ++(0,-0.5cm) -| ($(m-2-4.south)+(0.25cm,0)$);
-%\draw[line>] (mB2.south) -- ++(0,-0.375cm) -| ($(m-2-4.south)+(-0.25cm,0)$);
-%
-%
-%\end{tikzpicture}
-%
-%\end{frame}
-%
-%
-%\begin{frame}{FSPMs Are Information Processing Systems}
-%    \centering
-%    \begin{tikzpicture}
-%
-%	\matrix[
-%        matrix of nodes,
-%        anchor=center,
-%        inner sep=0.2em,
-%		ampersand replacement=\&,
-%		nodes={anchor=center},
-%    ] at (-4.5,0) (input) {
-%        {\color{SeqRed2}\Huge\faTemperatureLow} \& temperature \\
-%        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=center]{humidity\\ water availability}; \\
-%        {\color{orange}\Huge\faSun}         \& light \\
-%    };
-%
-%    \node[anchor=center,inner sep=0pt] at (0,0) (image) {\includegraphics[height=6cm]{figures/plant-model}};
-%
-%	\matrix[
-%        matrix of nodes,
-%        anchor=center,
-%        inner sep=0.2em,
-%		ampersand replacement=\&,
-%		nodes={anchor=center},
-%    ] at (4.5,0) (output) {
-%        {\color{SeqRed2}\Huge\faTemperatureLow} \& surface temperature \\
-%        {\color{SeqBlue2}\Huge\faTint}          \& \node[align=left]{transpiration rate\\water flow\\water potential}; \\
-%        {\color{orange}\Huge\faSun}         \& net photosynthesis \\
-%    };
-%
-%
-%	\begin{scope}[transparency group,-{Latex[length=10mm, width=12.5mm]},,opacity=0.3]
-%		\draw[line width=5mm] ($0.5*(input.east)+0.5*(input.center)$) -- ($0.5*(image.west)+0.5*(image.center)$);
-%		\draw[line width=5mm] ($0.5*(image.east)+0.5*(image.center)$) -- ($0.5*(output.west)+0.5*(output.center)$);
-%	\end{scope}
-%	
-%	\only<2->{%
-%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg,minimum height=3cm,minimum width=3.5cm}]
-%	  \node at (input.center) {\Huge \textbf{inputs}};
-%	  \node at (image.center) (processing) {\Huge \textbf{processing}};
-%	  \node at (output.center) {\Huge \textbf{outputs}};
-%    \end{scope}
-%	}
-%    \only<3->{%
-%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg}]
-%	  \node [above left=0.6cm and 3cm of processing.north,anchor=base] {\huge non-linear};
-%	  \node [above right=0.6cm and 3cm of processing.north,anchor=base] {\huge memory};
-%    \end{scope}
-%    	}
-%
-%    \only<4->{%
-%	\begin{scope}[every node/.style={fill=white,fill opacity=0.85,text opacity=1,text=fg}]
-%	  \node [below=0.5cm of processing.south] {\Huge \textbf{reservoir computing}};
-%    \end{scope}
-%    	}
-%
-%    \end{tikzpicture}
-%\end{frame}
-%
-%\begin{frame}{Reservoir Computing Enables Computing with Dynamic Systems}
-%    \centering
-%    \begin{tikzpicture}
-%    
-%    	% draw rectangle labels
-%    	\node[box label,anchor=base] at (1,3.5) (i-label) {input};
-%    	\node[box label,anchor=base] at (5,3.5) (res-label) {reservoir/RNN};
-%    	\node[box label,anchor=base] at (9,3.5) (o-label) {target};
-%    	
-%    	\draw[line] (i-label.base) ++(-1,-0.2) -- ++(2,0);
-%    	\draw[line] (res-label.base) ++(-2.5,-0.2) -- ++(5,0);
-%    	\draw[line] (o-label.base) ++(-1,-0.2) -- ++(2,0);
-%    	
-%    	
-%    	%%% other reservoir
-%  	\begin{scope}
-%      \node[input node] at (1,2) (in0) {};
-%      \node[input node] at (1,1) (in1) {};
-%
-%    	\setcounter{resnode}{0}
-%    	% reservoir nodes
-%    	\foreach \x/\y in {3/2.25,3.5/1,4/3.5,5/1.5,5.25/3.75,6/0.5,6.15/2.25,7/3.5} {
-%    		\draw (\x,2.5*\y/3.5) node[reservoir node] (rn\the\value{resnode}) {};
-%    		\stepcounter{resnode}
-%    	}
-%
-%    	% input arrows
-%    	\foreach \i/\j in {0/0,0/1,1/0,1/2} {
-%    		\draw[line>] (in\i) -- (rn\j);
-%    	}
-%
-%    	% reservoir arrows
-%    	\foreach \i/\j in {0/3,0/2,1/0,1/5,2/1,3/1,2/3,4/2,5/6,6/2,6/4,6/7,7/0,7/4} {
-%    		\draw[line>] (rn\i) -- (rn\j);
-%    	}
-%    	% bent arrows
-%        \foreach \i/\j in {2/0,5/7} {
-%       		\draw[line>] (rn\i) to[bend right] (rn\j);
-%       	}
-%       	
-%    
-%        	% output nodes
-%    	\node[output node] at (9,1.5) (out0) {};
-%
-%    	% output arrows
-%    	\draw[line>,red2] (rn6) -- (out0);
-%       	\draw[line>,red2] (rn3) -- (out0);
-%       \draw[line>,red2] (rn5) -- (out0);
-%       \draw[line>,red2] (rn7) -- (out0);
-%       \end{scope}
-%	\end{tikzpicture}
-%	
-%	\tikz{
-%	\matrix[
-%		matrix of nodes,
-%		column sep=0.2cm,
-%		ampersand replacement=\&,
-%		] {
-%	\includegraphics[height=2cm]{figures/nasa-ball-robot} \&
-%	\includegraphics[height=2cm]{figures/water_bucket_ripples} \&
-%	\includegraphics[height=2cm]{figures/photinic_ic} \&
-%	\includegraphics[height=2cm]{figures/strawberry}\\
-%	};
-%	}
-%	
-%\end{frame}
+
+\begin{frame}[plain,label=title]
+\thispagestyle{empty}
+	\setlength{\imwidth}{2cm}
+	\begin{tikzpicture}[overlay,remember picture]
+        \matrix[%
+            anchor=south west,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ]  at ($(current page.south west)+(0.25,0.25)$) (m) {
+            \includegraphics[width=\imwidth]{figures/ugent_logo} \&
+            \includegraphics[width=\imwidth]{figures/ilvo} \&
+            \includegraphics[width=\imwidth]{figures/imec_logo} \\
+        };
+
+        \matrix[%
+            anchor=south east,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ]  at ($(current page.south east)+(-0.25,0.25)$) (m) {
+            \includegraphics[width=\imwidth]{figures/AIRO} \\
+        };
+	\begin{pgfonlayer}{background}
+		\node[opacity=0.3] at ($(current page.center)+(0,0.5)$) {\includegraphics[height=\paperheight]{figures/bg-image}};
+	\end{pgfonlayer}
+	\end{tikzpicture}
+    \maketitle
+\end{frame}
+
+\begin{frame}{Plants Are Not Part of Horticulture Environment Control}
+
+\centering
+	\begin{tikzpicture}
+	
+	\node (greenhouse) {\includegraphics[width=0.5\textwidth]{figures/serre}};
+	\node[anchor=north east] at ($(greenhouse.north west)+(-0.25,0)$) {\includegraphics[width=0.2\textwidth]{figures/farmer}};
+   %\node[anchor=south east] at ($(greenhouse.south west)+(-0.25,0)$) {\Huge\faBrain};
+	\node[anchor=north west] at ($(greenhouse.north east)+(0.25,0)$) {\includegraphics[width=0.2\textwidth]{figures/refinery}};
+   \node[anchor=south west] at ($(greenhouse.south east)+(0.25,0)$) {\Huge\faCar\hspace{0.5cm}\faTemperatureHigh};
+	
+	
+\end{tikzpicture}
+	
+
+
+\end{frame}
+
+\begin{frame}{Complex Input-driven Responses of Plants}
+    \centering
+
+	\setlength{\imwidth}{4.5cm}
+    \begin{tikzpicture}%[remember picture, overlay]
+        \matrix[%
+            anchor=south,
+            matrix of nodes,
+            ampersand replacement=\&,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+        ] (m) {
+            \includegraphics[width=\imwidth]{figures/Mimosa pudica2} \&
+            \includegraphics[width=\imwidth]{figures/plant_in_sun.png} \&
+            \includegraphics[width=\imwidth]{figures/stomata} \\
+            %\includegraphics[width=\imwidth]{figures/bladdikte} \\
+        };
+
+		\usebeamercolor{normal text}
+		\begin{scope}[
+			every node/.style={fill=white,fill opacity=0.7,text opacity=1,text=fg,inner sep=2pt,outer sep=0pt,Text Depth=labels}
+		]
+		\node[above=0cm of m-1-1.south] {movement};
+		\node[above=0cm of m-1-2.south] {colour and day length};
+		\node[above=0cm of m-1-3.south] {stomata};
+		%\node[above=0cm of m-2-2.south] {bladdikte};
+		\end{scope}
+    \end{tikzpicture}
+
+    % © Volodymyr Koman/MIT Chemical Engineering
+    % https://www.sonnenseite.com/en/science/sensors-applied-to-plant-leaves-warn-of-water-shortage/
+\end{frame}
+
+\begin{frame}{Plants Can Be Considered Dynamic Systems}
+    \centering
+    \setlength{\imwidth}{3cm}
+    \begin{tikzpicture}
+
+        \begin{scope}[local bounding box=image]
+            \node[anchor=center] (plant) {\includegraphics[width=7cm]{figures/random-plant2}};
+        \end{scope}
+		\node at (-4.5,0) (input) {};
+		\node at (4.5,0) (output) {};
+
+       	\begin{scope}[transparency group,opacity=0.85]
+       		\draw[line width=5mm,{Latex[length=10mm, width=12.5mm]}-] (image.center)++(-0.5,0) -- ++(-2,0);
+       		\draw[line width=5mm,-{Latex[length=10mm, width=12.5mm]}] (image.center)++(0.5,0) -- ++(2,0);
+       	\end{scope}
+
+        \matrix[%
+            anchor=center,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ] at (input) (min) {
+            \includegraphics[width=\imwidth]{figures/weather} \\
+            \includegraphics[width=\imwidth]{figures/bladluis} \\
+            \includegraphics[width=\imwidth]{figures/butterfly} \\
+        };
+
+        \matrix[%
+            anchor=center,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ] at (output) (mout) {
+            \includegraphics[width=\imwidth]{figures/fall} \\
+            \includegraphics[width=\imwidth]{figures/fruit} \\
+            \includegraphics[width=\imwidth]{figures/wortels} \\
+        };
+
+
+    \end{tikzpicture}
+
+% image by Marco Verch CC-BY, https://www.flickr.com/photos/30478819@N08/32661392157
+\end{frame}
+
+
+
+\begin{frame}{Reservoir Computing Enables Computing with Dynamic Systems}
+    \centering
+    \begin{tikzpicture}
+    
+    	% draw rectangle labels
+    	\node[box label,anchor=base] at (1,3.5) (i-label) {input};
+    	\node[box label,anchor=base] at (5,3.5) (res-label) {reservoir/RNN};
+    	\node[box label,anchor=base] at (9,3.5) (o-label) {target};
+    	
+    	\draw[line] (i-label.base) ++(-1,-0.2) -- ++(2,0);
+    	\draw[line] (res-label.base) ++(-2.5,-0.2) -- ++(5,0);
+    	\draw[line] (o-label.base) ++(-1,-0.2) -- ++(2,0);
+    	
+    	
+    	%%% other reservoir
+  	\begin{scope}
+      \node[input node] at (1,2) (in0) {};
+      \node[input node] at (1,1) (in1) {};
+
+    	\setcounter{resnode}{0}
+    	% reservoir nodes
+    	\foreach \x/\y in {3/2.25,3.5/1,4/3.5,5/1.5,5.25/3.75,6/0.5,6.15/2.25,7/3.5} {
+    		\draw (\x,2.5*\y/3.5) node[reservoir node] (rn\the\value{resnode}) {};
+    		\stepcounter{resnode}
+    	}
+
+    	% input arrows
+    	\foreach \i/\j in {0/0,0/1,1/0,1/2} {
+    		\draw[line>] (in\i) -- (rn\j);
+    	}
+
+    	% reservoir arrows
+    	\foreach \i/\j in {0/3,0/2,1/0,1/5,2/1,3/1,2/3,4/2,5/6,6/2,6/4,6/7,7/0,7/4} {
+    		\draw[line>] (rn\i) -- (rn\j);
+    	}
+    	% bent arrows
+        \foreach \i/\j in {2/0,5/7} {
+       		\draw[line>] (rn\i) to[bend right] (rn\j);
+       	}
+       	
+    
+        	% output nodes
+    	\node[output node] at (9,1.5) (out0) {};
+
+    	% output arrows
+    	\draw[line>,red2] (rn6) -- (out0);
+       	\draw[line>,red2] (rn3) -- (out0);
+       \draw[line>,red2] (rn5) -- (out0);
+       \draw[line>,red2] (rn7) -- (out0);
+       \end{scope}
+	\end{tikzpicture}
+	
+	\tikz{
+	\matrix[
+		matrix of nodes,
+		column sep=0.2cm,
+		ampersand replacement=\&,
+		column 1/.style={visible on=<2->},
+		column 2/.style={visible on=<3->},
+		column 3/.style={visible on=<4->},
+		column 4/.style={visible on=<5->},
+		] {
+	\includegraphics[height=2cm]{figures/water_bucket_ripples} \&
+	\includegraphics[height=2cm]{figures/nasa-ball-robot} \&
+	\includegraphics[height=2cm]{figures/photinic_ic} \&
+	\includegraphics[height=2cm]{figures/strawberry}\\
+	};
+	}
+	
+\end{frame}
+
+
+\begin{frame}{Computing With a Water Tank}
+
+\centering
+\begin{tikzpicture}%[overlay,remember picture]
+\node at (0,0) (bucket) {\includegraphics[width=0.5\linewidth]{figures/water-bucket}};
+
+\node[left=0.5cm of bucket,visible on=<2->] (motor) {\includegraphics[width=1.5cm]{figures/motor}};
+\node[right=0.5cm of bucket,visible on=<3->] (camera) {\Huge\faCamera};
+\node[left=0.5cm of motor,align=center,font=\Huge,visible on=<2->] (digits) {zero\\one\\one\\zero\\zero\\\faVolumeUp};
+
+\node[right=0.5cm of camera,align=center,font=\Huge,visible on=<3->] (digits2) {0\\1\\1\\0\\0};
+
+\draw[line>,visible on=<2->] (digits) -- (motor);
+\draw[line>,visible on=<2->] (motor) -- (bucket);
+\draw[line>,visible on=<3->] (bucket) -- (camera);
+\draw[line>,visible on=<3->] (camera) -- (digits2);
+\end{tikzpicture}
+
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=west] at ($(current page.south west)+(0.5,0.5)$) {Fernando et al., 2003};
+\end{tikzpicture}
+
+\end{frame}
+
+
+\begin{frame}{Reservoir Computing with Plants}
+    \centering
+    \begin{tikzpicture}
+
+	\matrix[
+        matrix of nodes,
+        anchor=center,
+        inner sep=0.2em,
+		ampersand replacement=\&,
+		nodes={anchor=center},
+    ] at (-4.5,0) (input) {
+        {\color{SeqRed2}\Huge\faTemperatureLow} \& temperature \\
+        {\color{SeqBlue2}\Huge\faTint}          \& humidity \\
+        {\color{orange}\Huge\faSun}         \& light \\
+    };
+
+        \begin{scope}[local bounding box=image,yshift=-2.3cm,xshift=-3.5cm]
+            \node[anchor=south west,inner sep=0pt] at (0,0) (plant) {\includegraphics[width=7cm]{figures/strawberry_transp}};
+
+            %\onslide<2->{
+            \begin{scope}[x={(plant.south east)},y={(plant.north west)}]
+                \draw[fill=red3] (0.7,0.73) circle (3pt) coordinate (m1);
+                \draw[fill=red3] (0.3,0.73) circle (3pt) coordinate (m2);
+                \draw[fill=red3] (0.325,0.875) circle (3pt) coordinate (m3);
+                \draw[fill=red3] (0.7,0.4) circle (3pt) coordinate (m4);
+                \draw[fill=red3] (0.39,0.42) circle (3pt) coordinate (m5);
+                \draw[fill=red3] (0.75,0.15) circle (3pt) coordinate (m6);
+                \draw[fill=red3] (0.41,0.3) circle (3pt) coordinate (m7);
+                \draw[fill=red3] (0.55,0.15) circle (3pt) coordinate (m8);
+                \draw[fill=red3] (0.18,0.42) circle (3pt) coordinate (m9);
+            \end{scope}
+            %}
+        \end{scope}
+
+	\matrix[
+        matrix of nodes,
+        anchor=center,
+        inner sep=0.2em,
+		ampersand replacement=\&,
+		nodes={anchor=center},
+    ] at (4.5,0) (output) {
+        {\color{SeqRed2}\Huge\faTemperatureLow} \& temperature \\
+        {\color{SeqBlue2}\Huge\faTint}          \& humidity \\
+        {\color{orange}\Huge\faSun}         \& light \\
+		{\includegraphics[width=2cm]{figures/IRGA2}} \& \node[align=center]{transpiration\\ photosynthesis}; \\
+        {\Huge\faIcon{tachometer-alt}} \& \node[align=center]{NARMA\\ delay line}; \\
+    };
+
+        \node[below=0cm of image] (lt) {leaf thickness measurement};
+		\draw[fill=red3] (lt.west) circle (3pt);
+
+
+	\begin{scope}[transparency group,-{Latex[length=10mm, width=12.5mm]},,opacity=0.3]
+		\draw[line width=5mm] ($0.5*(input.east)+0.5*(input.center)$) -- ($0.5*(image.west)+0.5*(image.center)$);
+		\draw[line width=5mm] ($0.5*(image.east)+0.5*(image.center)$) -- ($0.5*(output.west)+0.5*(output.center)$);
+	\end{scope}
+    \end{tikzpicture}
+    
+    \begin{tikzpicture}[overlay,remember picture]
+	  \node[fill=bg,text=black,anchor=south west] at ($(current page.south west)+(0.5,0.5)$) (qr) {\qrcode[height=1.75cm]{https://www.nature.com/articles/s41598-022-16874-0}};
+	  \node[right=0.5cm of qr.south east,anchor=south west] {Pieters et al., 2022};
+    \end{tikzpicture}
+\end{frame}
 
 
 \begin{frame}{Reservoir Computing Applied to FSPMs}
@@ -577,14 +701,23 @@ legend style={fill=BgColor},
         \draw (7,4.9) node[anchor=center] (carrot) {\Large\color{SeqYellow2}\faCarrot};
         \draw (7,5.6) node[anchor=center] (carrot) {\Large\color{SeqYellow2}\color{SeqGrey2}\faEyeDropper};
         
-        \node[output node] at (9,4.5) (fspm-target) {};
+       % target
+       \only<1>{
+       \node[output node] at (9,4.5) (fspm-target) {};
+       }
+       \only<2>{
+    	\node at (9,4) {\color{orange}\huge\faSun};
+    	\node at (9,5) {\color{red2}\huge\faTemperatureLow};
+    	}
+        
 
     	\draw[line>] (1.9,4.5) -- (4.5,4.5);
     	\draw[line>] (5.5,4.2) -- (6.6,3.2);
     	\draw[line>] (5.5,4.4) -- (6.6,4.1);
     	\draw[line>] (5.5,4.6) -- (6.6,4.9);
     	\draw[line>] (5.5,4.8) -- (6.6,5.6);
-    	\draw[line>] (7.3,4.5) -- (fspm-target) node[midway,above,text=fg,fill=BgColor,fill opacity=0.90,text opacity=1] {\Large ?};
+    	%\only<1>{\draw[line>] (7.3,4.5) -- (8.5,4.5) node[midway,above,text=fg,fill=BgColor,fill opacity=0.90,text opacity=1] {\Large ?};}
+    	\only<1>{\draw[line>] (7.3,4.5) -- (8.5,4.5);}
     	%\draw[line>] (7,-2.25) -- (rh);
     	
     	%%% other reservoir
@@ -626,20 +759,18 @@ legend style={fill=BgColor},
 	\end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Towards an Experimental Framework for FSPMs}
+\begin{frame}{Selecting FSPM Reservoir Readout and Target}
     \centering
     \begin{tikzpicture}
     	% rectangles
     	\draw[box] (0,0) rectangle (2,6);
     	\draw[box] (2.5,0) rectangle (7.5,6);
     	\draw[box] (8,0) rectangle (10,6);
-    	\draw[box] (10.5,0) rectangle (12.5,6);
 
     	% draw rectangle labels
-    	\node[box label,anchor=south] at (1,6) {input};
-    	\node[box label,anchor=south] at (5,6) {reservoir};
-    	\node[box label,anchor=south] at (9,6) {readout};
-    	\node[box label,anchor=south] at (11.5,6) {output};
+    	\node[box label,anchor=base] at (1,6.2) {input};
+    	\node[box label,anchor=base] at (5,6.2) {reservoir};
+    	\node[box label,anchor=base] at (9,6.2) {target};
     	
     	%% draw plant reservoir
     	
@@ -672,156 +803,34 @@ legend style={fill=BgColor},
     	% draw pot
     	\draw[brown,fill=brown] (5,3.25) -- ++(-0.5,0) -- ++(-0.1,0.75) -- ++(1.2,0) -- ++(-0.1,-0.75) -- cycle;
 
-    % draw readout
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0em,
-        outer sep=0pt,
-		ampersand replacement=\&,
-		nodes={anchor=center,minimum width=0.35cm,minimum height=0.35cm,color=fg,font={\tiny},inner sep=0cm,outer sep=0cm},
-		%my style,
-    ] (readout1) at (9,4.3) {
-       \color{SeqGreen2}\faLeaf        \&        |[fill=BuRdRed4]| {}  \& |[fill=BuRdRed3]| {}  \& |[fill=BuRdRed1]| {}  \\
-		\color{SeqRed2}\faApple*        \& 		|[fill=BuRdBlue4]| {} \& |[fill=BuRdRed4]| {}  \& |[fill=BuRdBlue3]| {} \\
-		\color{SeqYellow2}\faCarrot     \& 		|[fill=BuRdRed3]| {}  \& |[fill=BuRdRed4]| {}  \& |[fill=BuRdRed3]| {}  \\
-		\color{SeqGrey2}\faEyeDropper \& 		|[fill=BuRdBlue2]| {} \& |[fill=BuRdRed1]| {}  \& |[fill=BuRdRed1]| {}  \\
-                             \& \scalebox{.75}{$t_1$}                 \& \scalebox{.75}{$t_2$}                 \& \scalebox{.75}{$t_3$}                 \\ 
-    };
-    
-    % draw processing
-    \path ($0.5*(readout1-2-4.east)+0.5*(readout1-3-4.east)$) coordinate (h-times);
-    \node[right=0cm of h-times,fill=BgColor,text=fg,outer sep=0pt,inner sep=1pt] (times1) {$\times$};
-    
-    \draw[line] ($(readout1-1-2.north)+(-0.1,0)$) -| (readout1-2-2.west) |- ($(readout1-4-2.south)+(-0.1,0)$);
-    \draw[line] ($(readout1-1-4.north)+(+0.1,0)$) -| (readout1-2-4.east) |- ($(readout1-4-4.south)+(+0.1,0)$);
-    
-    % weight matrix
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0em,
-		ampersand replacement=\&,
-		nodes={anchor=center,minimum width=0.35cm,minimum height=0.35cm,color=fg,font={\tiny},outer sep=0pt,inner sep=1pt},
-		right=0cm of times1,
-    ] (weights1) {
-       |[fill=BuRdRed3]| {}  \\
-		|[fill=BuRdBlue1]| {} \\
-		|[fill=BuRdRed1]| {}  \\
-		|[fill=BuRdBlue4]| {} \\
-		\\
-    };
-    
-    \draw[line] ($(weights1-1-1.north)+(-0.1,0)$) -| (weights1-2-1.west) |- ($(weights1-4-1.south)+(-0.1,0)$);
-    \draw[line] ($(weights1-1-1.north)+(+0.1,0)$) -| (weights1-2-1.east) |- ($(weights1-4-1.south)+(+0.1,0)$);
-    
-    	% target
-    	\node[output node] at (11.5,4.5) (out0) {};
+    	% output    	
+    	\draw (7,3.2) node[anchor=center] (leaf) {\Large\color{SeqGreen2}\faLeaf};
+        \draw (7,4.1) node[anchor=center] (rh) {\Large\color{SeqGreen1}\faLeaf};
+        \draw (7,4.9) node[anchor=center] (carrot) {\Large\color{SeqGreen3}\faLeaf};
+        \draw (7,5.6) node[anchor=center] (carrot) {\Large\color{SeqGreen4}\faLeaf};
         
-       \draw[line>] (weights1-2-1.south east)++(0.1,0) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
+       % target
+    	\node at (9,4) {\color{orange}\huge\faSun};
+    	\node at (9,5) {\color{red2}\huge\faTemperatureLow};
+        
 
     	\draw[line>] (1.9,4.5) -- (4.5,4.5);
-    	\draw[line>] (5.5,4.5) -- (8.3,4.5);
+    	\draw[line>] (5.5,4.2) -- (6.6,3.2);
+    	\draw[line>] (5.5,4.4) -- (6.6,4.1);
+    	\draw[line>] (5.5,4.6) -- (6.6,4.9);
+    	\draw[line>] (5.5,4.8) -- (6.6,5.6);
     	
-    	%%% time
+    	\draw[line>] (7.3,4.5) -- (8.5,4.5) node[midway] (h1) {};
     	
-    	\draw[line>] (8.6,2.75) -- (9.8,2.75) node[midway,above] {time};
+    	\draw[fill=red2,line,red2] (h1) circle (0.1cm);
+      \draw[red2,line] (h1) |- ++(-1,-2.5) node[anchor=east,overlap label] (rr) {\color{red2} Ridge regression};
     	
-    	%%% other reservoir
-  	\begin{scope}
-      \node[input node] at (1,2) (in0) {};
-      \node[input node] at (1,1) (in1) {};
-
-    	\setcounter{resnode}{0}
-    	% reservoir nodes
-    	\foreach \x/\y in {3/2.25,3.5/1,4/3.5,5/1.5,5.25/3.75,6/0.5,6.15/2.25,7/3.5} {
-    		\draw (\x,2.5*\y/3.5) node[reservoir node] (rn\the\value{resnode}) {};
-    		\stepcounter{resnode}
-    	}
-
-    	% input arrows
-    	\foreach \i/\j in {0/0,0/1,1/0,1/2} {
-    		\draw[line>] (in\i) -- (rn\j);
-    	}
-
-    	% reservoir arrows
-    	\foreach \i/\j in {0/3,0/2,1/0,1/5,2/1,3/1,2/3,4/2,5/6,6/2,6/4,6/7,7/0,7/4} {
-    		\draw[line>] (rn\i) -- (rn\j);
-    	}
-    	% bent arrows
-        \foreach \i/\j in {2/0,5/7} {
-       		\draw[line>] (rn\i) to[bend right] (rn\j);
-       	}
-       	
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0em,
-		ampersand replacement=\&,
-		nodes={anchor=center,minimum width=0.35cm,minimum height=0.35cm,color=fg,font={\tiny}},
-		%my style,
-    ] (readout2) at (9,1.3) {
-		$v_1$ \& |[fill=BuRdMidpoint]| {}\& |[fill=BuRdBlue2]| {} \& |[fill=BuRdMidpoint]| {} \\
-		$v_2$ \& |[fill=BuRdBlue1]| {}   \& |[fill=BuRdRed3]| {}  \& |[fill=BuRdBlue4]| {}    \\
-		$v_3$ \& |[fill=BuRdBlue2]| {}   \& |[fill=BuRdRed4]| {}  \& |[fill=BuRdRed3]| {}     \\
-		$v_4$ \& |[fill=BuRdBlue1]| {}   \& |[fill=BuRdBlue3]| {} \& |[fill=BuRdBlue3]| {}    \\
-		      \& $t_1$                   \& $t_2$                 \& $t_3$                    \\ 
-    };
-    
-    \path ($0.5*(readout2-2-4.east)+0.5*(readout2-3-4.east)$) coordinate (h-times);
-    \node[right=0cm of h-times,fill=BgColor,text=fg,outer sep=0pt,inner sep=1pt] (times2) {$\times$};
-    
-    \draw[line] ($(readout2-1-2.north)+(-0.1,0)$) -| (readout2-2-2.west) |- ($(readout2-4-2.south)+(-0.1,0)$);
-    \draw[line] ($(readout2-1-4.north)+(+0.1,0)$) -| (readout2-2-4.east) |- ($(readout2-4-4.south)+(+0.1,0)$);
-    
-        	% output nodes
-    	\node[output node] at (11.5,1.5) (out0) {};
-    
-	\matrix[
-        matrix of nodes,
-        anchor=center,
-        inner sep=0em,
-		ampersand replacement=\&,
-		nodes={anchor=center,minimum width=0.35cm,minimum height=0.35cm,color=fg,font={\tiny}},
-		right=0cm of times2,
-    ] (weights2) {
-       |[fill=BuRdRed3]| {}  \\
-		|[fill=BuRdBlue1]| {} \\
-		|[fill=BuRdRed1]| {}  \\
-		|[fill=BuRdBlue4]| {} \\
-		\\
-    };
-    
-    \draw[line] ($(weights2-1-1.north)+(-0.1,0)$) -| (weights2-2-1.west) |- ($(weights2-4-1.south)+(-0.1,0)$);
-    \draw[line] ($(weights2-1-1.north)+(+0.1,0)$) -| (weights2-2-1.east) |- ($(weights2-4-1.south)+(+0.1,0)$);
-    
-       \draw[line>] ($0.5*(weights2-2-1.east)+0.5*(weights2-3-1.east)$) ++(0.1,0) -- (out0) node[midway,above,yshift=0.1cm] {$\sum$};
-
-    	% output arrows
-    	\draw[line>] (rn6) -- (readout2-2-1);
-       	\draw[line>] (rn3) -- (readout2-3-1);
-       \draw[line>] (rn5) -- (readout2-4-1);
-       \draw[line>] (rn7) -- (readout2-1-1);
-       \end{scope}
-       
-       \only<2->{\node[anchor=center,rotate=15,text=red,text width=7cm,fill=white,fill opacity=0.90,text opacity=1,align=center] at (6.25,3) {\LARGE But what about variable plant architecture?};}
-       \only<3->{\node[anchor=center,text=fg,text width=7cm,fill=white,fill opacity=0.90,text opacity=1,align=center] at (6.25,3) {\LARGE The archiecture must be fixed.};}
-	\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Experimental Evaluation Using Three FSPMs}
-
-\centering
-\begin{tabular}{lccc}
- & \includegraphics[width=0.2\textwidth]{figures/cnwheat} & \includegraphics[width=0.2\textwidth]{figures/hydroshoot} & \includegraphics[width=0.2\textwidth]{figures/GrassLeaf} \\
- & \textbf{CN-Wheat} & \textbf{Hydroshoot} & \textbf{GrassLeaf} \\
- & {\footnotesize (Barillot et al., 2016)} & {\footnotesize (Albasha et al., 2019)} & {\footnotesize (unpublished)} \\
-\textbf{simulation step} & 1h & 1h & 1h \\
-\textbf{simulation duration} & 7d + repeats & 50d & TODO \\
-\textbf{model structure} & static & post-veg. growth & single organ \\
-\textbf{model size} & approx. $10^3$ & 15 & TODO \\
-\end{tabular}
-
+    	\node[below right=0.5cm and 0.5cm of rr.south,overlap label] (rrlr) {linear regression};
+    	\node[below left=0.5cm and 0.5cm of rr.south,overlap label] (rrpo) {prevents overfit};
+    	
+    	\draw[line>] (rr) -- (rrlr);
+    	\draw[line>] (rr) -- (rrpo);
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Overview of the Methodology (Practical Point of View)}
@@ -848,17 +857,18 @@ legend style={fill=BgColor},
 \hfill%
 \begin{column}{0.47\linewidth}
 \centering
+\only<2->{
 \begin{tikzpicture}
     \begin{axis}[
     	width=\linewidth,
     	height=\linewidth,
     	date coordinates in=x,
     	xticklabel={\month-\day},
-    	xlabel={time},
+    	xlabel={time [month-day]},
     	ylabel={air temperature [\si{\degreeCelsius}]},
     	xtick={2012-06-01,2012-06-05,2012-06-09,2012-06-13},
     	]
-        \addplot[line width=1pt] table[x=date, y=Tac, col sep=comma] {meteo.csv};
+        \addplot[line width=1pt] table[x=time, y=Tac, col sep=semicolon] {data/meteo.csv};
         
         \scoped[on background layer] \fill [blue3!50] (axis cs:2012-06-01 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-05 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
         
@@ -867,32 +877,254 @@ legend style={fill=BgColor},
         \scoped[on background layer] \fill [blue3!50] (axis cs:2012-06-09 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-13 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
         
         \scoped[on background layer] \fill [green2!50] (axis cs:2012-06-13 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymin}) rectangle (axis cs:2012-06-14 00:00,\noexpand\pgfkeysvalueof{/pgfplots/ymax});
+        
+        \draw (axis cs: 2012-06-03 00:00,13) node {train};
+        \draw (axis cs: 2012-06-07 00:00,13) node {test};
+        \draw (axis cs: 2012-06-11 00:00,13) node {train};
     \end{axis}
 \end{tikzpicture}
+}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Transpiration-based Reservoirs for Input Condition Prediction}
+\begin{frame}{Normalised Evaluation Metric}
 
-\centering
+$ \text{NMSE} = \dfrac{1}{N}\dfrac{\sum_{i=0}^{N-1}\left[y-\hat{y}\right]^2}{\text{var}(y)} $
 
-There should be an image here like in the paper
+\begin{tabular}{cl}
++ & normalised metric \\
++ & easy to compare different targets \\
+- & phase/time sensitive \\
+- & sensitive to outliers
+\end{tabular}
 
 \end{frame}
 
-\begin{frame}{Code and Results}
+\begin{frame}{Simple Experimental Evaluation Using Three FSPMs}
 
-\url{https://doi.org/10.5281/zenodo.7701995}
+\centering
+\begin{tabular}{ccc}
+\includegraphics[width=0.3\textwidth]{figures/cnwheat} & \includegraphics[width=0.3\textwidth]{figures/hydroshoot} & \includegraphics[width=0.3\textwidth]{figures/GrassLeaf} \\
+\textbf{WheatFspm} & \textbf{Hydroshoot} & \textbf{GrassLeaf} \\
+{\footnotesize (Barillot et al., 2016)} & {\footnotesize (Albasha et al., 2019)} & {\footnotesize (unpublished)} \\
+transpiration & transpiration & leaf thickness \\
+\end{tabular}
 
-Based on the master dissertation by UGent student Maxime Cannoodt.
+\end{frame}
+\begin{frame}{Transpiration-based Reservoirs Based on Hydroshoot}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+		name=graph1,
+    	%width=\linewidth,
+    	%height=\linewidth,
+    	xlabel={time [day]},
+    	ylabel={air temperature [\si{\degreeCelsius}]},
+    	legend pos=outer north east,
+    	legend style={cells={align=left}},
+    	]
+    	
+    \addplot[line width=1pt,red2,select coords between index={1}{19}] table[x=time, y=y, col sep=comma] {data/results_Hydroshoot-Tair.csv};  	
+    \addlegendentry{\color{fg} $y$};
+  \foreach \x/\y in {20/39,40/59,60/79,80/99,100/119} {
+  \addplot[line width=1pt,red2,select coords between index={\x}{\y},forget plot] table[x=time, y=y, col sep=comma] {data/results_Hydroshoot-Tair.csv};}
+    	
+  \addplot[line width=1pt,blue3,select coords between index={1}{19}] table[x=time, y=yh, col sep=comma] {data/results_Hydroshoot-Tair.csv};
+  \addlegendentry{\color{fg} $\hat{y}$};
+    	
+\foreach \x/\y in {20/39,40/59,60/79,80/99,100/119} {
+  \addplot[line width=1pt,blue3,select coords between index={\x}{\y},forget plot] table[x=time, y=yh, col sep=comma] {data/results_Hydroshoot-Tair.csv};
+  }
+  
 
-\textbf{Olivier Pieters}
-Maxime Cannoodt
-Tom De Swaef
-Michiel Stock
-Francis wyffels
-	
+  
+  
+
+\end{axis}
+\draw (graph1.south east) node[anchor=south west] {NMSE=0.62};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Transpiration-based Reservoirs Based on WheatFspm}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+		name=graph1
+    	%width=\linewidth,
+    	%height=\linewidth,
+    	xlabel={time [day]},
+    	ylabel={air temperature [\si{\degreeCelsius}]},
+    	legend pos=outer north east,
+    	legend style={cells={align=left}},
+    	]
+    	
+  \addplot[line width=1pt,red2,select coords between index={1}{19}] table[x=time, y=y, col sep=comma] {data/results_WheatFspm-Tair.csv};
+  \addlegendentry{\color{fg} $y$};
+    	\foreach \x/\y in {20/39,40/59,60/79,80/99,100/119} {
+  \addplot[line width=1pt,red2,select coords between index={\x}{\y},forget plot] table[x=time, y=y, col sep=comma] {data/results_WheatFspm-Tair.csv};
+  }
+  
+    \addplot[line width=1pt,blue2] table[x=time, y=yh, col sep=comma,select coords between index={1}{19}] {data/results_WheatFspm-Tair.csv};
+    \addlegendentry{\color{fg} $\hat{y}$};
+      	\foreach \x/\y in {20/39,40/59,60/79,80/99,100/119} {
+  \addplot[line width=1pt,blue2] table[x=time, y=yh, col sep=comma,select coords between index={\x}{\y},forget plot] {data/results_WheatFspm-Tair.csv};
+  }
+  
+\end{axis}
+\draw (graph1.south east) node[anchor=south west] {NMSE=0.19};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Transpiration-based Reservoirs Based on GrassLeaf}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+name=graph1
+    	%width=\linewidth,
+    	%height=\linewidth,
+    	xlabel={time [day]},
+    	ylabel={air temperature [\si{\degreeCelsius}]},
+    	legend pos=outer north east,
+    	legend style={cells={align=left}},
+    	]
+  \addplot[line width=1pt,red2,select coords between index={1}{19}] table[x=time, y=y, col sep=comma] {data/results_GrassLeaf-Tair.csv};
+  \addlegendentry{\color{fg} $y$};
+  
+  \foreach \x/\y in {20/39,40/59,60/79,80/99,100/119,120/139,140/159,160/179} {
+  \addplot[line width=1pt,red2] table[x=time, y=y, col sep=comma,select coords between index={\x}{\y},forget plot] {data/results_GrassLeaf-Tair.csv};
+  }
+  
+  \addplot[line width=1pt,blue2,select coords between index={1}{19}] table[x=time, y=yh, col sep=comma] {data/results_GrassLeaf-Tair.csv};
+  \addlegendentry{\color{fg} $\hat{y}$};
+  \foreach \x/\y in {20/39,40/59,60/79,80/99,100/119,120/139,140/159,160/179} {
+  \addplot[line width=1pt,blue2] table[x=time, y=yh, col sep=comma,select coords between index={\x}{\y},forget plot] {data/results_GrassLeaf-Tair.csv};
+  }
+\end{axis}
+\draw (graph1.south east) node[anchor=south west] {NMSE=0.63};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Reservoir Readout Error Estimation}
+	\centering
+    \begin{tikzpicture}
+    	\pgfplotstableread[col sep=comma]{data/error_Hydroshoot-PAR.csv}\dfa
+    	\pgfplotstableread[col sep=comma]{data/error_WheatFspm-PAR.csv}\dfb
+    	\pgfplotstableread[col sep=comma]{data/error_GrassLeaf-PAR.csv}\dfc
+
+    	\begin{axis}[%
+    		boxplot,
+    		boxplot/draw direction=y,
+    		width=0.8\linewidth,
+    		height=7cm,
+    		typeset ticklabels with strut,
+    		ymin=0,
+    		ymax=1.0,
+    		enlarge x limits={abs=0.5},
+    		minor y tick num=1,
+    		xtick={1,2,3},
+         xticklabels={Hydroshoot,WheatFspm,GrassLeaf},
+    		ymajorgrids=true,
+    		yminorgrids=true,
+    		ylabel={NMSE},
+            %legend entries={Hydroshoot,WheatFSPM,GrassLeaf},
+            %legend style={at={(0.02,0.98)},anchor=north west},
+            xtick style={draw=none},
+    	]
+        \setcounter{boxpos}{0}
+
+        %\addlegendimage{mark=square*,red1}
+        %\addlegendimage{mark=square*,red2}
+        %\addlegendimage{mark=square*,blue2}
+        
+        \addplot[boxplot/draw position=1,red1,line width=1pt,mark=*,] table[y=nmse_test]{\dfa};
+        \addplot[boxplot/draw position=2,red1,line width=1pt,mark=*,] table[y=nmse_test]{\dfb};
+        \addplot[boxplot/draw position=3,red1,line width=1pt,mark=*,] table[y=nmse_test]{\dfc};
+        
+
+
+    	\end{axis}
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Next Steps For This Research}
+\begin{nextstep}{}
+Create systematic approach to analyse stationarity of readouts
+\end{nextstep}
+\begin{nextstep}{}
+Remove the requirement for stationarity, which is a limiting factor for practical usage
+\end{nextstep}
+\begin{nextstep}{}
+Use FSPMs to Speed-up Greenhouse Experiments
+\end{nextstep}
+\end{frame}
+
+\begin{frame}{What You Should Remember From This Talk}
+
+\begin{conclusion}{}
+FSPMs are non-linear dynamic systems that fit the requirements for reservoir computing
+\end{conclusion}
+
+\begin{conclusion}{}
+Reservoir computing offers a novel holistic view on plant responses
+\end{conclusion}
+
+\end{frame}
+
+\begin{frame}[plain,label=title]
+\thispagestyle{empty}
+	\setlength{\imwidth}{2cm}
+	\begin{tikzpicture}[overlay,remember picture]
+        \matrix[%
+            anchor=south west,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+            nodes={anchor=south},
+        ]  at ($(current page.south west)+(0.25,0.25)$) (m) {
+            \includegraphics[width=\imwidth]{figures/ugent_logo} \&
+            \includegraphics[width=\imwidth]{figures/ilvo} \&
+            \includegraphics[width=\imwidth]{figures/imec_logo} \&[1cm]
+				\node[fill=white,text=black] {\qrcode[height=\imwidth]{https://github.com/opieters/fspm2023}}; \&[1cm]
+				\node[fill=white,text=black] {\qrcode[height=\imwidth]{https://www.nature.com/articles/s41598-022-16874-0}}; \\
+        };
+
+        \matrix[%
+            anchor=south east,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ]  at ($(current page.south east)+(-0.25,0.25)$) (m) {
+            \includegraphics[width=\imwidth]{figures/AIRO} \\
+        };
+        
+        \matrix[%
+            anchor=north,
+            matrix of nodes,
+            inner sep=0pt,
+            inner sep=0cm,
+			column sep=0.2cm,
+			row sep=0.2cm,
+            ampersand replacement=\&,
+        ]  at ($(current page.center)+(0,0)$) (m) {
+            \includegraphics[width=1cm]{headshots/mcannoodt} \&
+            \includegraphics[width=1cm]{headshots/tdeswaef} \&
+            \includegraphics[width=1cm]{headshots/mstock} \&
+            \includegraphics[width=1cm]{headshots/fwyffels} \\
+            Maxime Cannoodt \& Tom De Swaef \& Michiel Stock \& Francis wyffels\\
+        };
+	\begin{pgfonlayer}{background}
+		\node[opacity=0.3] at ($(current page.center)+(0,0.5)$) {\includegraphics[height=\paperheight]{figures/bg-image}};
+	\end{pgfonlayer}
+	\end{tikzpicture}
+	\author{}\date{}\institute{}
+    \maketitle
 \end{frame}
 
 \end{document}

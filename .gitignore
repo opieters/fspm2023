@@ -1,0 +1,19 @@
+*.out
+*.nav
+*.aux
+*.snm
+*.gz
+*.toc
+*.log
+simulations/README.md
+presentation/fspm2023_presentation.pdf
+presentation/original.pdf
+Aanvraag reisfinanciering FWO FSPM2023.docx
+confirmation_of_payment.pdf
+confirmation.pdf
+E070_52_1_I.pdf
+abstract/*.png
+presentation/figures_original/
+abstract/
+simulations/
+participation-confirmation.pdf
